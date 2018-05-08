@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'evidence-newsreader-k8s'
+rootProject.name = 'evidence-newsreader-k8s-rite'
