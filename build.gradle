@@ -15,11 +15,13 @@ apply plugin: 'application'
 // In this section you declare where to find the dependencies of your project
 repositories {
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
+    compile 'com.github.vmk:rite:master-SNAPSHOT'
+    compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '3.1'
 }
 
 // Define the main class for the application
-mainClassName = 'nl.surfsara.sda.enkr.UploadRelics'
+mainClassName = 'nl.surfsara.sda.enkr.EnkrMain'
