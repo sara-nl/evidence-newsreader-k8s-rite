@@ -20,6 +20,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 public class EnkrUtils {
+
     public static ArrayList<RelicPair> uploadRelics(File inputDir, String projectId, Properties enkrProperties) throws Exception {
         // FIXME think about better way to propagate enkrProperties
         ArrayList<RelicPair> relics = new ArrayList<>();
@@ -33,9 +34,11 @@ public class EnkrUtils {
                 enkrProperties.getProperty(PropertyKeys.RPASS.getKey())
         );
 
+        System.out.println("Uploading from: " + inputDir.getAbsolutePath());
         File[] documentListing = inputDir.listFiles();
 
         for (File document : documentListing) {
+            System.out.println("Processing document: " + document.getName());
             String relicId = UUID.randomUUID().toString();
             String fileName = document.getName();
             Relic r = new Relic(relicId);
@@ -47,6 +50,7 @@ public class EnkrUtils {
             rd.setProperty(MinioResolver.DescriptorKeys.ACCESKEY.getKey(), enkrProperties.getProperty(PropertyKeys.MACCESSKEY.getKey()));
             rd.setProperty(MinioResolver.DescriptorKeys.SECRETKEY.getKey(), enkrProperties.getProperty(PropertyKeys.MSECRETKEY.getKey()));
             RelicResolver rr = RelicResolverFactory.getInstance().getResolverForEnvironment(MinioResolver.ENVIRONMENT);
+
             rr.resolveExternal(r, rd, inputDir);
 
             ms.putRelic(r);
@@ -56,7 +60,7 @@ public class EnkrUtils {
             String orelicId = UUID.randomUUID().toString();
             String ofileName = document.getName().replaceAll("\\.txt", ".naf");
             Relic or = new Relic(orelicId);
-            r.setFileName(ofileName);
+            or.setFileName(ofileName);
 
             ResolverDescriptor ord = new ResolverDescriptor(r.getIdentifier(), MinioResolver.ENVIRONMENT);
             ord.setProperty(MinioResolver.DescriptorKeys.MINIOHOST.getKey(), enkrProperties.getProperty(PropertyKeys.MHOST.getKey()));
@@ -94,6 +98,7 @@ public class EnkrUtils {
             Step s = new Step("Resolve input file");
             CopyInOperation cio = new CopyInOperation();
             cio.setRelicId(rp.getInputRelic().getIdentifier());
+            s.add(cio);
             recipe.add(s);
 
             s = new Step("Run pipeline");
@@ -108,6 +113,7 @@ public class EnkrUtils {
             s = new Step("Resolve output file");
             CopyOutOperation coo = new CopyOutOperation();
             coo.setRelicId(rp.getOutputRelic().getIdentifier());
+            s.add(coo);
             recipe.add(s);
 
             ms.putRecipe(recipe);
