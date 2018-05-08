@@ -145,7 +145,7 @@ public class EnkrMain {
             } else if (optionsInEffect.has(optionParser.retract) && optionsInEffect.has(optionParser.projectId)) {
                // TODO
                // Delete recipes, delete relics delete minio files (in and out)
-            } else if (optionsInEffect.has(optionParser.projectId) && optionsInEffect.has(optionParser.outputDir) && optionsInEffect.has(optionParser.put)) {
+            } else if (optionsInEffect.has(optionParser.projectId) && optionsInEffect.has(optionParser.inputDir) && optionsInEffect.has(optionParser.put)) {
                 String projectid = optionsInEffect.valueOf(optionParser.projectId);
                 File inputDir = optionsInEffect.valueOf(optionParser.inputDir);
 

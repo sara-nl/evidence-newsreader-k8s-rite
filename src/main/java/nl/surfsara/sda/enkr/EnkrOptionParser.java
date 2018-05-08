@@ -55,8 +55,8 @@ public class EnkrOptionParser extends OptionParser {
         putOption.add("upload");
 
         ArrayList<String> outputDirectoryOption = new ArrayList<String>();
-        inputDirectoryOption.add("o");
-        inputDirectoryOption.add("output");
+        outputDirectoryOption.add("o");
+        outputDirectoryOption.add("output");
 
         // accept rules:
         projectId = acceptsAll(projectIdOption, "Required. The project name. Used as id to store job information and output files.").withRequiredArg().ofType(String.class).describedAs("string");
