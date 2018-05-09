@@ -62,7 +62,7 @@ public class EnkrUtils {
             Relic or = new Relic(orelicId);
             or.setFileName(ofileName);
 
-            ResolverDescriptor ord = new ResolverDescriptor(r.getIdentifier(), MinioResolver.ENVIRONMENT);
+            ResolverDescriptor ord = new ResolverDescriptor(or.getIdentifier(), MinioResolver.ENVIRONMENT);
             ord.setProperty(MinioResolver.DescriptorKeys.MINIOHOST.getKey(), enkrProperties.getProperty(PropertyKeys.MHOST.getKey()));
             ord.setProperty(MinioResolver.DescriptorKeys.BUCKET.getKey(), projectId + "-output");
             ord.setProperty(MinioResolver.DescriptorKeys.ACCESKEY.getKey(), enkrProperties.getProperty(PropertyKeys.MACCESSKEY.getKey()));
@@ -105,7 +105,8 @@ public class EnkrUtils {
             RunBashScriptOperation bco = new RunBashScriptOperation();
             StringBuffer script = new StringBuffer();
             script.append("#!/bin/bash\n");
-            script.append("/newsreader.sh " + rp.getInputRelic().getFileName());
+//            script.append("/newsreader.sh " + rp.getInputRelic().getFileName());
+            script.append("cat \"" + rp.getInputRelic().getFileName() + "\"");
             bco.setScript(script.toString());
             s.add(bco);
             recipe.add(s);
