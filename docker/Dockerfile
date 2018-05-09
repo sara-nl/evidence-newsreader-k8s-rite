@@ -1,13 +1,13 @@
-FROM openjdk:8 AS BUILD_IMAGE
+FROM gradle:4.7 AS BUILD
 
-RUN wget -q https://github.com/vmk/rite/archive/master.zip
-RUN unzip master.zip
-RUN cd rite-master && ./gradlew build
-RUN cd rite-master && ./gradlew installDist
+RUN wget -q https://github.com/vmk/rite/archive/master.tar.gz
+RUN tar xzf master.tar.gz
+
+WORKDIR /home/gradle/rite-master
+RUN gradle installDist
 
 
 FROM evidence/newsreaderdutch
 
-COPY --from=BUILD_IMAGE /rite-master/build/install/rite /rite
-
+COPY --from=BUILD /home/gradle/rite-master/build/install/rite /rite
 ENTRYPOINT [ "/rite/bin/rite" ]
