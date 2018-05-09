@@ -105,8 +105,7 @@ public class EnkrUtils {
             RunBashScriptOperation bco = new RunBashScriptOperation();
             StringBuffer script = new StringBuffer();
             script.append("#!/bin/bash\n");
-//            script.append("/newsreader.sh " + rp.getInputRelic().getFileName());
-            script.append("cat \"" + rp.getInputRelic().getFileName() + "\"");
+            script.append("/newsreader.sh " + rp.getInputRelic().getFileName());
             bco.setScript(script.toString());
             s.add(bco);
             recipe.add(s);
