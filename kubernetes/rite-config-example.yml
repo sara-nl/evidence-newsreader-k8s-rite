@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rite-config
+data:
+  host.properties: |
+    id=rite
+    type=MongoDB
+    hostname=
+    port=
+    dbname=
+    collection=
+    auth=true
+    user=
+    pass=
+  relic.properties: |
+    environment=minio
+    type=MongoDB
+    hostname=
+    port=
+    dbname=
+    collection=
+    auth=
+    user=
+    pass=
+  rite.properties: |
+    maxfailures=3
+    tickrate=2000
+    interval=2000

@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: evidence-newsreader
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: evidence-newsreader
+    spec:
+      containers:
+      - name: evidence-newsreader
+        image: surfsara/evidence-newsreader-k8s-rite
+        volumeMounts:
+        - name: rite-config-volume
+          mountPath: /host.properties
+          subPath: host.properties
+        - name: rite-config-volume
+          mountPath: /relic.properties
+          subPath: relic.properties
+        - name: rite-config-volume
+          mountPath: /rite.properties
+          subPath: rite.properties
+        resources:
+          requests:
+            cpu: "1"
+            memory: "8Gi"
+      volumes:
+      - name: rite-config-volume
+        configMap:
+          name: rite-config
