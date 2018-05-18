@@ -94,14 +94,11 @@ public class EnkrMain {
             if (optionsInEffect.has(optionParser.help) || args.length == 0) {
                 showUsage = true;
             }
-            if (optionsInEffect.has(optionParser.get) && optionsInEffect.has(optionParser.projectId) && optionsInEffect.has(optionParser.outputDir)) {
-                // TODO
-                // Lookup relics for succesful recipes; resolve relics to outputdir
-            } else if (optionsInEffect.has(optionParser.report) && optionsInEffect.has(optionParser.projectId)) {
+            if (optionsInEffect.has(optionParser.report) && optionsInEffect.has(optionParser.projectId)) {
                 String projectid = optionsInEffect.valueOf(optionParser.projectId);
                 System.out.println("Gathering job report for project: " + projectid + "...");
                 //String regex = ".*" + projectid + "\\].*" + getProperty(PropertyKeys.CLIENTID).replaceAll("-", "\\-") + ".*";
-                String regex = ".*" + getProperty(PropertyKeys.CLIENTID).replaceAll("-", "\\-") + ".*";
+                String regex = projectid + "-.*";
                 String host = getProperty(PropertyKeys.JHOST);
                 int port = Integer.parseInt(getProperty(PropertyKeys.JPORT));
                 String dbName = getProperty(PropertyKeys.JDBNAME);
@@ -110,7 +107,7 @@ public class EnkrMain {
                 if (Boolean.parseBoolean(getProperty(PropertyKeys.JAUTH))) {
                     db.authenticate(getProperty(PropertyKeys.JUSER), getProperty(PropertyKeys.JPASS).toCharArray());
                 }
-                DBCollection recipeCollection = db.getCollection("recipes");
+                DBCollection recipeCollection = db.getCollection(projectid + "-recipes");
                 BasicDBObject q = new BasicDBObject();
                 q.put("recipe", new BasicDBObject("$regex", regex));
                 long total = recipeCollection.count(q);
@@ -142,9 +139,6 @@ public class EnkrMain {
                 System.out.println((new StringBuilder("Unlocked: ")).append(unlocked).toString());
                 System.out.println();
                 mongo.close();
-            } else if (optionsInEffect.has(optionParser.retract) && optionsInEffect.has(optionParser.projectId)) {
-               // TODO
-               // Delete recipes, delete relics delete minio files (in and out)
             } else if (optionsInEffect.has(optionParser.projectId) && optionsInEffect.has(optionParser.inputDir) && optionsInEffect.has(optionParser.put)) {
                 String projectid = optionsInEffect.valueOf(optionParser.projectId);
                 File inputDir = optionsInEffect.valueOf(optionParser.inputDir);
