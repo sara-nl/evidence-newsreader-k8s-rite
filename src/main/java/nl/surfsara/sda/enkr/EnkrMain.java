@@ -1,15 +1,15 @@
 package nl.surfsara.sda.enkr;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
-import joptsimple.OptionSet;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.UUID;
@@ -63,8 +63,29 @@ public class EnkrMain {
     private static Properties properties;
 
     public static void main(String[] args) {
-        EnkrOptionParser optionParser = new EnkrOptionParser();
-        OptionSet optionsInEffect = null;
+
+        CommandMain cm = new CommandMain();
+        CommandReport cr = new CommandReport();
+        CommandPut cp = new CommandPut();
+        String report = "report";
+        String put = "put";
+        JCommander jc = JCommander.newBuilder()
+                .addObject(cm)
+                .addCommand(report, cr)
+                .addCommand(put, cp)
+                .build();
+        jc.setProgramName("enkr");
+        try {
+            jc.parse(args);
+        } catch (ParameterException e) {
+            showErrorAndExit(jc, e);
+        }
+
+        Boolean showUsage = false;
+        if (cm.help) {
+            showUsage = true;
+        }
+
         System.out.println();
         System.out.println("-------------------------------------------------------------------------------");
         System.out.println("Using the following application properties: ");
@@ -80,7 +101,7 @@ public class EnkrMain {
             try {
                 properties.store(new FileOutputStream(new File(PROPERTIES)), "Added auto-generated clientid.");
             } catch (Exception e) {
-                showErrorAndExit(optionParser, e);
+                showErrorAndExit(jc, e);
             }
         }
         for (PropertyKeys p : PropertyKeys.values()) {
@@ -89,13 +110,8 @@ public class EnkrMain {
         System.out.println("-------------------------------------------------------------------------------");
 
         try {
-            optionsInEffect = optionParser.parse(args);
-            boolean showUsage = false;
-            if (optionsInEffect.has(optionParser.help) || args.length == 0) {
-                showUsage = true;
-            }
-            if (optionsInEffect.has(optionParser.report) && optionsInEffect.has(optionParser.projectId)) {
-                String projectid = optionsInEffect.valueOf(optionParser.projectId);
+            if (report.equals(jc.getParsedCommand())) {
+                String projectid = cr.projectid;
                 System.out.println("Gathering job report for project: " + projectid + "...");
                 //String regex = ".*" + projectid + "\\].*" + getProperty(PropertyKeys.CLIENTID).replaceAll("-", "\\-") + ".*";
                 String regex = projectid + "-.*";
@@ -139,46 +155,32 @@ public class EnkrMain {
                 System.out.println((new StringBuilder("Unlocked: ")).append(unlocked).toString());
                 System.out.println();
                 mongo.close();
-            } else if (optionsInEffect.has(optionParser.projectId) && optionsInEffect.has(optionParser.inputDir) && optionsInEffect.has(optionParser.put)) {
-                String projectid = optionsInEffect.valueOf(optionParser.projectId);
-                File inputDir = optionsInEffect.valueOf(optionParser.inputDir);
+            } else if (put.equals(jc.getParsedCommand())) {
+                String projectid = cp.projectid;
+                File inputDir = new File(cp.input);
 
                 System.out.println("Uploading user files...");
                 ArrayList<RelicPair> relics = EnkrUtils.uploadRelics(inputDir, projectid, properties);
-
                 System.out.println("Creating jobs for project: " + projectid + "...");
-                System.out.println("Creating jobs...");
-
                 EnkrUtils.prepareRecipes(relics, projectid, properties);
             } else {
                 showUsage = true;
             }
             if (showUsage) {
-                showUsage(optionParser);
+                jc.usage();
             }
             System.out.println("-------------------------------------------------------------------------------");
             System.out.println("Done!");
             System.out.println("-------------------------------------------------------------------------------");
         } catch (Exception e) {
-            showErrorAndExit(optionParser, e);
+            showErrorAndExit(jc, e);
         }
     }
 
-    private static void showErrorAndExit(EnkrOptionParser optionParser, Exception e) {
+    private static void showErrorAndExit(JCommander jc, Exception e) {
         System.out.println("Something didn't quite work like expected: [" + e.getMessage() + "]");
-        showUsage(optionParser);
+        jc.usage();
         System.exit(1);
-    }
-
-    private static void showUsage(EnkrOptionParser optionParser) {
-        try {
-            optionParser.printHelpOn(System.out);
-        } catch (IOException e) {
-            // Should never happen in this case. I wonder how the sysout below
-            // would fare..
-            System.out.println("Yikes, could not print to System.out");
-            e.printStackTrace();
-        }
     }
 
     private static String getProperty(PropertyKeys prop) {

@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     compile 'com.github.vmk:rite:master-SNAPSHOT'
-    compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '3.1'
+    compile group: 'com.beust', name: 'jcommander', version: '1.72'
 }
 
 // Define the main class for the application
